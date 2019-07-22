@@ -127,6 +127,8 @@ try:
   while True:
     jdata = extract_json_data()
     os.system('cls' if os.name == 'nt' else 'clear')
+    print(str(jdata['Tournament']))
+    print('=================================')
     for player in selected_players:
       print(str(jdata['Players'][player]["POS"]) + " " + player)
       print("\tTO PAR: " + str(jdata['Players'][player]["TO PAR"]))
