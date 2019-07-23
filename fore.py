@@ -161,7 +161,7 @@ try:
         player_file.write(str(new_golfer) + '\n')
         player_file.close()
         selected_players.append(str(new_golfer))
-        print(str(new_player) + 'added!')
+        print(str(new_golfer) + 'added!')
         catch_count = 0
         run = True
       
