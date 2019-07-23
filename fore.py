@@ -6,6 +6,9 @@ import os
 import sys
 import signal
 
+#global variable
+catch_count = 0
+
 def handler(signum, frame):
     global default_handler, catch_count
     catch_count += 1
@@ -127,8 +130,16 @@ def extract_json_data():
 
   return data
 
+def print_table_data(jdata,selected_players):
+  os.system('cls' if os.name == 'nt' else 'clear')
+  print(str(jdata['Tournament']))
+  print('=================================')
+  for player in selected_players:
+    print(str(jdata['Players'][player]["POS"]) + " " + player)
+    print("\tTO PAR: " + str(jdata['Players'][player]["TO PAR"]))
+    print("\tTHRU:   " + str(jdata['Players'][player]["THRU"]))
+
 run = True
-catch_count = 0
 signal.signal(signal.SIGINT, handler)
 default_handler = signal.getsignal(signal.SIGINT)
 
@@ -140,14 +151,7 @@ player_file.close()
 
 try:
   while run == True:
-    jdata = extract_json_data()
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(str(jdata['Tournament']))
-    print('=================================')
-    for player in selected_players:
-      print(str(jdata['Players'][player]["POS"]) + " " + player)
-      print("\tTO PAR: " + str(jdata['Players'][player]["TO PAR"]))
-      print("\tTHRU:   " + str(jdata['Players'][player]["THRU"]))
+    print_table_data(extract_json_data(),selected_players)
     
     time.sleep(5)
     
@@ -161,7 +165,7 @@ try:
         player_file.write(str(new_golfer) + '\n')
         player_file.close()
         selected_players.append(str(new_golfer))
-        print(str(new_golfer) + 'added!')
+        print(str(new_golfer) + ' added!')
         catch_count = 0
         run = True
       
@@ -175,7 +179,6 @@ try:
       continue
     else:
       raise KeyboardInterrupt
-      run = False
     
 except KeyboardInterrupt:
   pass
