@@ -53,6 +53,11 @@ def get_players(soup, pos_col, player_col, score_col, thru_col):
 def get_col_indecies(soup):
   header_rows = soup.find_all("tr", class_="Table2__header-row")
 
+  # ensure tournament data exists
+  if len(header_rows) == 0 :
+    print("No tournament data available at this time.")
+    exit()
+
   # other possible entries for what could show up, add here.
   pos_fields = ['POS']
   player_fields = ['PLAYER']
