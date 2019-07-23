@@ -3,6 +3,17 @@ from bs4 import BeautifulSoup
 import json
 import time
 import os
+import sys
+import signal
+
+def handler(signum, frame):
+    global default_handler, catch_count
+    catch_count += 1
+    print (catch_count, 'Please Wait...')
+    if catch_count > 2:
+        # recover handler for signal.SIGINT
+        signal.signal(signal.SIGINT, default_handler)
+        print('***STOPPING***')
 
 def get_players(soup, pos_col, player_col, score_col, thru_col):
   rows = soup.find_all("tr", class_="Table2__tr")
@@ -116,15 +127,19 @@ def extract_json_data():
 
   return data
 
+run = True
+catch_count = 0
+signal.signal(signal.SIGINT, handler)
+default_handler = signal.getsignal(signal.SIGINT)
 
 selected_players = []
 player_file = open("golfers.txt")
-
 for player in player_file:
   selected_players.append(player.rstrip("\n"))
+player_file.close()
 
 try:
-  while True:
+  while run == True:
     jdata = extract_json_data()
     os.system('cls' if os.name == 'nt' else 'clear')
     print(str(jdata['Tournament']))
@@ -133,6 +148,34 @@ try:
       print(str(jdata['Players'][player]["POS"]) + " " + player)
       print("\tTO PAR: " + str(jdata['Players'][player]["TO PAR"]))
       print("\tTHRU:   " + str(jdata['Players'][player]["THRU"]))
-    time.sleep(10)
+    
+    time.sleep(5)
+    
+    if catch_count in range(1,3):
+      
+      command = input('Press G to add golfer to list or Q to Quit: ')
+      
+      if command == 'G' or command =='g':
+        new_golfer = input('Type first and last name of golfer: ')
+        player_file = open("golfers.txt", 'a')
+        player_file.write(str(new_golfer) + '\n')
+        player_file.close()
+        selected_players.append(str(new_golfer))
+        print(str(new_player) + 'added!')
+        catch_count = 0
+        run = True
+      
+      elif command == 'Q' or command == 'q':
+        raise KeyboardInterrupt
+
+      else:
+        continue
+
+    elif catch_count == 0:
+      continue
+    else:
+      raise KeyboardInterrupt
+      run = False
+    
 except KeyboardInterrupt:
   pass
