@@ -18,35 +18,70 @@ def handler(signum, frame):
         signal.signal(signal.SIGINT, default_handler)
         print('***STOPPING***')
 
-def get_players(soup, pos_col, player_col, score_col, thru_col):
+def create_player_file():
+  new_golfers = input('Type first and last name of golfers separated by commas: ')
+  player_file = open("golfers.txt", 'w+')
+  for new_golfer in new_golfers.split(', '):
+    player_file.write(str(new_golfer) + '\n')
+  player_file.close()
+
+def read_player_file():
+  selected_players = []
+  
+  # create golfers.txt if it does not already exist
+  if(not os.path.isfile("golfers.txt")):
+    create_player_file()
+
+  player_file = open("golfers.txt")
+  for player in player_file:
+    selected_players.append(player.rstrip("\n"))
+  player_file.close()
+
+  return selected_players
+
+def add_new_golfer():
+  new_golfer = input('Type first and last name of golfer: ')
+  player_file = open("golfers.txt", 'a')
+  player_file.write(str(new_golfer) + '\n')
+  player_file.close()
+  print(str(new_golfer) + ' added!')
+  return new_golfer
+
+def get_players(soup, pos_col, player_col, score_col, thru_col, tee_time_col):
   rows = soup.find_all("tr", class_="Table2__tr")
   players = {}
+  pos = ''
+  score = ''
+  thru = ''
+  tee_time = ''
   for row in rows[1:]:
     cols = row.find_all("td")
-    # If we get a bad row. For example, during the tournament we there
-    # is a place holder row that represents the cut line
-    if len(cols) < 5:
-      continue
-    pos = cols[pos_col].text.strip()
+    
     player = cols[player_col].text.strip()
-    score = cols[score_col].text.strip().upper()
-    thru = cols[thru_col].text.strip() if thru_col else "F"
-    if score == 'CUT':
-      players[player] = {'POS': pos, 'TO PAR': 'CUT', 'THRU': thru}
-      continue
-    elif score == 'WD':
-      players[player] = {'POS': pos, 'TO PAR': 'WD', 'THRU': thru}
-      continue
-    elif score == 'DQ':
-      players[player] = {'POS': pos, 'TO PAR': 'DQ', 'THRU': thru}
-      continue
-    elif score == 'E':
-      players[player] = {'POS': pos, 'TO PAR': 0, 'THRU': thru}
+    if(tee_time_col is None):
+      pos = cols[pos_col].text.strip()
+      score = cols[score_col].text.strip().upper()
+      thru = cols[thru_col].text.strip() if thru_col else "F"
+      if score == 'CUT':
+        players[player] = {'POS': pos, 'TO PAR': 'CUT', 'THRU': thru}
+        continue
+      elif score == 'WD':
+        players[player] = {'POS': pos, 'TO PAR': 'WD', 'THRU': thru}
+        continue
+      elif score == 'DQ':
+        players[player] = {'POS': pos, 'TO PAR': 'DQ', 'THRU': thru}
+        continue
+      elif score == 'E':
+        players[player] = {'POS': pos, 'TO PAR': 0, 'THRU': thru}
+      else:
+        try:
+          players[player] = {'POS': pos, 'TO PAR': int(score), 'THRU': thru}
+        except ValueError:
+          players[player] = {'POS': '?', 'TO PAR': '?', 'THRU': '?'}
     else:
-      try:
-        players[player] = {'POS': pos, 'TO PAR': int(score), 'THRU': thru}
-      except ValueError:
-        players[player] = {'POS': '?', 'TO PAR': '?', 'THRU': '?'}
+      tee_time = cols[tee_time_col].text.strip()
+      players[player] = {'TEE TIME': tee_time}
+    
   return players
 
 
@@ -63,6 +98,7 @@ def get_col_indecies(soup):
   player_fields = ['PLAYER']
   to_par_fields = ['TO PAR', 'TOPAR', 'TO_PAR']
   thru_fields = ['THRU']
+  tee_time_fields = ['TEE TIME']
 
   header_col = header_rows[0].find_all("th")
 
@@ -70,6 +106,7 @@ def get_col_indecies(soup):
   player_col = None
   score_col = None
   thru_col = None
+  tee_time_col = None
 
   for i in range(len(header_col)):
     col_txt = header_col[i].text.strip().upper()
@@ -85,12 +122,15 @@ def get_col_indecies(soup):
     if col_txt in thru_fields:
       thru_col = i
       continue
+    if(col_txt in tee_time_fields):
+      tee_time_col = i
+      continue
 
-  if player_col is None or score_col is None:
+  if player_col is None or (score_col is None and tee_time_col is None):
     print("Unable to track columns")
     exit()
 
-  return pos_col, player_col, score_col, thru_col
+  return pos_col, player_col, score_col, thru_col, tee_time_col
 
 
 def verify_scrape(players):
@@ -100,11 +140,14 @@ def verify_scrape(players):
 
   bad_entry_count = 0
   for key, value in players.items():
-    scr = players[key]['TO PAR']
+    if('TO PAR' in players.keys()):
+      scr = players[key]['TO PAR']
+    else:
+      scr = players[key]['TEE TIME']
     if scr == '?':
       bad_entry_count += 1
-    if type(scr) is int and (scr > 50 or scr < -50):
-      print("Bad score entry, exiting")
+    if bad_entry_count > 0:
+      print("Bad data entry, exiting")
       exit()
 
   if bad_entry_count > 3:
@@ -126,37 +169,37 @@ def extract_json_data():
   status = soup.find_all("div", class_="status")[0].find_all("span")[0].text.upper()
   active = 'FINAL' not in status
 
-  pos_col, player_col, score_col, thru_col = get_col_indecies(soup)
-  players = get_players(soup, pos_col, player_col, score_col, thru_col)
+  pos_col, player_col, score_col, thru_col, tee_time_col = get_col_indecies(soup)
+  players = get_players(soup, pos_col, player_col, score_col, thru_col, tee_time_col)
 
   verify_scrape(players)
 
   data = {'Tournament': get_tournament_name(soup), 'IsActive': active, 'Players': players}
 
-  return data
+  return data,tee_time_col
 
-def print_table_data(jdata,selected_players):
+def print_table_data(jdata,tee_time_col,selected_players):
   os.system('cls' if os.name == 'nt' else 'clear')
   print(str(jdata['Tournament']))
   print('=================================')
   for player in selected_players:
-    print(str(jdata['Players'][player]["POS"]) + " " + player)
-    print("\tTO PAR: " + str(jdata['Players'][player]["TO PAR"]))
-    print("\tTHRU:   " + str(jdata['Players'][player]["THRU"]))
+    if(tee_time_col is not None):
+      print(player + " " + str(jdata['Players'][player]["TEE TIME"]))
+    else:
+      print(str(jdata['Players'][player]["POS"]) + " " + player)
+      print("\tTO PAR: " + str(jdata['Players'][player]["TO PAR"]))
+      print("\tTHRU:   " + str(jdata['Players'][player]["THRU"]))
 
 run = True
 signal.signal(signal.SIGINT, handler)
 default_handler = signal.getsignal(signal.SIGINT)
 
-selected_players = []
-player_file = open("golfers.txt")
-for player in player_file:
-  selected_players.append(player.rstrip("\n"))
-player_file.close()
+selected_players = read_player_file()
 
 try:
   while run == True:
-    print_table_data(extract_json_data(),selected_players)
+    jdata,tee_time_col = extract_json_data()
+    print_table_data(jdata,tee_time_col,selected_players)
     
     time.sleep(5)
     
@@ -165,12 +208,7 @@ try:
       command = input('Press G to add golfer to list or Q to Quit: ')
       
       if command == 'G' or command =='g':
-        new_golfer = input('Type first and last name of golfer: ')
-        player_file = open("golfers.txt", 'a')
-        player_file.write(str(new_golfer) + '\n')
-        player_file.close()
-        selected_players.append(str(new_golfer))
-        print(str(new_golfer) + ' added!')
+        selected_players.append(str(add_new_golfer()))
         catch_count = 0
         run = True
       
