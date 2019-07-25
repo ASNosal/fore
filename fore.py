@@ -179,16 +179,38 @@ def extract_json_data():
   return data,tee_time_col
 
 def print_table_data(jdata,tee_time_col,selected_players):
+  # determine number of rows
+  n_rows = len(selected_players)
+  # determine number of columns
+  n_cols = len(jdata['Players'][selected_players[0]].items()) + 1
+  # determine width of potential columns
+  w_player_col = 0
+  for player in selected_players:
+    if len(player) > w_player_col :
+      w_player_col = len(player) + 2
+  w_pos_col = len("POS") + 3
+  w_scr_col = len("TO PAR") + 2
+  w_thru_col = len("THRU") + 2
+
+  #calculate table width
+  w_table = w_player_col + len("TEE TIME") + 2
+  if(n_cols > 2):
+    w_table = w_player_col + w_pos_col + w_scr_col + w_thru_col
+
   os.system('cls' if os.name == 'nt' else 'clear')
   print(str(jdata['Tournament']))
-  print('=================================')
+  print('=' * w_table)
   for player in selected_players:
+    player_col_data = player +  (" " * (w_player_col - len(player)))
     if(tee_time_col is not None):
-      print(player + " " + str(jdata['Players'][player]["TEE TIME"]))
+      tee_time = str(jdata['Players'][player]["TEE TIME"])
+      tee_time_col_data = (" " * (w_table - w_player_col - len(tee_time))) + tee_time
+      print(player_col_data + tee_time_col_data)
     else:
-      print(str(jdata['Players'][player]["POS"]) + " " + player)
-      print("\tTO PAR: " + str(jdata['Players'][player]["TO PAR"]))
-      print("\tTHRU:   " + str(jdata['Players'][player]["THRU"]))
+      pos_col_data = str(jdata['Players'][player]["POS"]) + (' ' * w_pos_col - len(str(jdata['Players'][player]["POS"])))
+      scr_col_data = str(jdata['Players'][player]["TO PAR"]) + (' ' * w_scr_col - len(str(jdata['Players'][player]["TO PAR"])))
+      thru_col_data = str(jdata['Players'][player]["THRU"]) + (' ' * w_thru_col - len(str(jdata['Players'][player]["THRU"])))
+      print(pos_col_data + player_col_data + scr_col_data + thru_col_data)
 
 run = True
 signal.signal(signal.SIGINT, handler)
