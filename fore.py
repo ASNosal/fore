@@ -140,7 +140,7 @@ def verify_scrape(players):
 
   bad_entry_count = 0
   for key, value in players.items():
-    if('TO PAR' in players.keys()):
+    if('TO PAR' in list(players.values())[0].keys()):
       scr = players[key]['TO PAR']
     else:
       scr = players[key]['TEE TIME']
@@ -188,28 +188,40 @@ def print_table_data(jdata,tee_time_col,selected_players):
       w_player_col = len(player) + 2
   w_pos_col = len("POS") + 3
   w_scr_col = len("TO PAR") + 2
-  w_thru_col = len("THRU") + 2
+  w_thru_col = len("THRU    ") + 2
 
   #calculate table width
   w_table = w_player_col + len("TEE TIME") + 2
+  w_table_offset = n_cols * 2 + 2
   if(n_cols > 2):
     w_table = w_player_col + w_pos_col + w_scr_col + w_thru_col
 
   os.system('cls' if os.name == 'nt' else 'clear')
-  print(str(jdata['Tournament']))
-  print('=' * w_table)
+  player_print_cnt = 0
+  #attempt to center tourney name
+  print((' ' * int((w_table + w_table_offset - len(str(jdata['Tournament'])))/2)) + str(jdata['Tournament']))
   for player,value in jdata['Players'].items():
     if(player in selected_players):
+      # print horizontal divider above data row
+      if(player_print_cnt > 0):
+        print('-' * (w_table + w_table_offset))
+      else :
+        print('=' * (w_table + w_table_offset))
+      
+      # print data row
       player_col_data = player +  (" " * (w_player_col - len(player)))
       if(tee_time_col is not None):
         tee_time = str(value["TEE TIME"])
         tee_time_col_data = (" " * (w_table - w_player_col - len(tee_time))) + tee_time
-        print(player_col_data + tee_time_col_data)
+        print('| ' + player_col_data + ' |' + tee_time_col_data + ' |')
       else:
-        pos_col_data = str(value["POS"]) + (' ' * w_pos_col - len(str(value["POS"])))
-        scr_col_data = str(value["TO PAR"]) + (' ' * w_scr_col - len(str(value["TO PAR"])))
-        thru_col_data = str(value["THRU"]) + (' ' * w_thru_col - len(str(value["THRU"])))
-        print(pos_col_data + player_col_data + scr_col_data + thru_col_data)
+        pos_col_data = str(value["POS"]) + (' ' * (w_pos_col - len(str(value["POS"]))))
+        scr_col_data = str(value["TO PAR"]) + (' ' * (w_scr_col - len(str(value["TO PAR"]))))
+        thru_col_data = str(value["THRU"]) + (' ' * (w_thru_col - len(str(value["THRU"]))))
+        print('| ' + pos_col_data + ' |' + player_col_data + ' |' + scr_col_data + ' |' + thru_col_data + ' |')
+      player_print_cnt = player_print_cnt + 1
+  # print horizontal divider below table
+  print('=' * (w_table + w_table_offset))
 
 run = True
 signal.signal(signal.SIGINT, handler)
@@ -222,7 +234,7 @@ try:
     jdata,tee_time_col = extract_json_data()
     print_table_data(jdata,tee_time_col,selected_players)
     
-    time.sleep(5)
+    time.sleep(10)
     
     if catch_count in range(1,3):
       
