@@ -248,7 +248,12 @@ try:
     jdata,tee_time_col = extract_json_data()
     print_table_data(jdata,tee_time_col,selected_players)
     
-    time.sleep(10)
+    # sleep for a minute unless an interrupt is caught
+    for i in range(60):
+      if catch_count == 0:
+        time.sleep(1)
+      else:
+        continue
     
     if catch_count in range(1,3):
       
