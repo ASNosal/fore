@@ -179,8 +179,6 @@ def extract_json_data():
   return data,tee_time_col
 
 def print_table_data(jdata,tee_time_col,selected_players):
-  # determine number of rows
-  n_rows = len(selected_players)
   # determine number of columns
   n_cols = len(jdata['Players'][selected_players[0]].items()) + 1
   # determine width of potential columns
@@ -200,17 +198,18 @@ def print_table_data(jdata,tee_time_col,selected_players):
   os.system('cls' if os.name == 'nt' else 'clear')
   print(str(jdata['Tournament']))
   print('=' * w_table)
-  for player in selected_players:
-    player_col_data = player +  (" " * (w_player_col - len(player)))
-    if(tee_time_col is not None):
-      tee_time = str(jdata['Players'][player]["TEE TIME"])
-      tee_time_col_data = (" " * (w_table - w_player_col - len(tee_time))) + tee_time
-      print(player_col_data + tee_time_col_data)
-    else:
-      pos_col_data = str(jdata['Players'][player]["POS"]) + (' ' * w_pos_col - len(str(jdata['Players'][player]["POS"])))
-      scr_col_data = str(jdata['Players'][player]["TO PAR"]) + (' ' * w_scr_col - len(str(jdata['Players'][player]["TO PAR"])))
-      thru_col_data = str(jdata['Players'][player]["THRU"]) + (' ' * w_thru_col - len(str(jdata['Players'][player]["THRU"])))
-      print(pos_col_data + player_col_data + scr_col_data + thru_col_data)
+  for player,value in jdata['Players'].items():
+    if(player in selected_players):
+      player_col_data = player +  (" " * (w_player_col - len(player)))
+      if(tee_time_col is not None):
+        tee_time = str(value["TEE TIME"])
+        tee_time_col_data = (" " * (w_table - w_player_col - len(tee_time))) + tee_time
+        print(player_col_data + tee_time_col_data)
+      else:
+        pos_col_data = str(value["POS"]) + (' ' * w_pos_col - len(str(value["POS"])))
+        scr_col_data = str(value["TO PAR"]) + (' ' * w_scr_col - len(str(value["TO PAR"])))
+        thru_col_data = str(value["THRU"]) + (' ' * w_thru_col - len(str(value["THRU"])))
+        print(pos_col_data + player_col_data + scr_col_data + thru_col_data)
 
 run = True
 signal.signal(signal.SIGINT, handler)
