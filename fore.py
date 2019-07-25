@@ -47,6 +47,20 @@ def add_new_golfer():
   print(str(new_golfer) + ' added!')
   return new_golfer
 
+def remove_golfer():
+  bye_golfer = input('Type first and last name of golfer to remove: ')
+  for player in selected_players:
+    if bye_golfer in selected_players:
+      selected_players.remove(bye_golfer)
+      print(str(bye_golfer) + ' removed!')
+    else:
+      continue
+    
+  player_file = open("golfers.txt", 'w+')
+  for dude in selected_players:
+    player_file.write(str(dude) + '\n')
+  player_file.close()
+
 def get_players(soup, pos_col, player_col, score_col, thru_col, tee_time_col):
   rows = soup.find_all("tr", class_="Table2__tr")
   players = {}
@@ -238,7 +252,7 @@ try:
     
     if catch_count in range(1,3):
       
-      command = input('Press G to add golfer to list or Q to Quit: ')
+      command = input('Press G to add golfer to list, R to remove a golfer or Q to Quit: ')
       
       if command == 'G' or command =='g':
         selected_players.append(str(add_new_golfer()))
@@ -247,6 +261,11 @@ try:
       
       elif command == 'Q' or command == 'q':
         raise KeyboardInterrupt
+      
+      elif command == 'R' or command =='r':
+        remove_golfer()
+        catch_count = 0
+        run = True
 
       else:
         continue
