@@ -47,17 +47,16 @@ def add_new_golfer():
   player_file = open("golfers.txt", 'a')
   player_file.write(str(new_golfer) + '\n')
   player_file.close()
-  print(str(new_golfer) + ' added!')
+  print(Fore.GREEN + str(new_golfer) + ' added!' + Fore.WHITE)
   return new_golfer
 
 def remove_golfer():
   bye_golfer = input('Type first and last name of golfer to remove: ')
-  for player in selected_players:
-    if bye_golfer in selected_players:
-      selected_players.remove(bye_golfer)
-      print(str(bye_golfer) + ' removed!')
-    else:
-      continue
+  if bye_golfer in selected_players:
+    selected_players.remove(bye_golfer)
+    print(Fore.RED + str(bye_golfer) + ' removed!' + Fore.WHITE)
+  else:
+    print(Fore.RED + bye_golfer + ' NOT IN YOUR LIST!' + Fore.WHITE)
     
   player_file = open("golfers.txt", 'w+')
   for dude in selected_players:
