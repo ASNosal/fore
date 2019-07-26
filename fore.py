@@ -329,6 +329,7 @@ try:
         run = True
 
       else:
+        catch_count = 0
         continue
 
     elif catch_count == 0:
