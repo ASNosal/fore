@@ -103,6 +103,7 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
   return players
 
 def ascii_art():
+  os.system('cls' if os.name == 'nt' else 'clear')
   print(Fore.GREEN + """\
          _______  _______  ______    _______  __  
         |       ||       ||    _ |  |       ||  | 
