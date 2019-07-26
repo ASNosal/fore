@@ -230,7 +230,7 @@ def print_table_data(jdata,tee_time_col,selected_players):
       if int(score) < 0:
         score = Fore.RED + str(score) + Fore.WHITE
       elif int(score) > 0:
-        score = Fore.CYAN + str(score) + Fore.WHITE
+        score = Fore.CYAN + '+' + str(score) + Fore.WHITE
       else:
         score = str(score)
       
