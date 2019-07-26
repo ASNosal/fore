@@ -63,11 +63,12 @@ def remove_golfer():
     player_file.write(str(dude) + '\n')
   player_file.close()
 
-def get_players(soup, pos_col, player_col, score_col, thru_col, tee_time_col):
+def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col):
   rows = soup.find_all("tr", class_="Table2__tr")
   players = {}
   pos = ''
   score = ''
+  today = ''
   thru = ''
   tee_time = ''
   for row in rows[1:]:
@@ -77,23 +78,24 @@ def get_players(soup, pos_col, player_col, score_col, thru_col, tee_time_col):
     if(tee_time_col is None):
       pos = cols[pos_col].text.strip()
       score = cols[score_col].text.strip().upper()
+      today = cols[today_col].text.strip().upper()
       thru = cols[thru_col].text.strip() if thru_col else "F"
       if score == 'CUT':
-        players[player] = {'POS': pos, 'TO PAR': 'CUT', 'THRU': thru}
+        players[player] = {'POS': pos, 'TO PAR': 'CUT', 'TODAY': '-', 'THRU': thru}
         continue
       elif score == 'WD':
-        players[player] = {'POS': pos, 'TO PAR': 'WD', 'THRU': thru}
+        players[player] = {'POS': pos, 'TO PAR': 'WD', 'TODAY': '-', 'THRU': thru}
         continue
       elif score == 'DQ':
-        players[player] = {'POS': pos, 'TO PAR': 'DQ', 'THRU': thru}
+        players[player] = {'POS': pos, 'TO PAR': 'DQ', 'TODAY': '-', 'THRU': thru}
         continue
       elif score == 'E':
-        players[player] = {'POS': pos, 'TO PAR': 0, 'THRU': thru}
+        players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.isdigit() else 0), 'THRU': thru}
       else:
         try:
-          players[player] = {'POS': pos, 'TO PAR': int(score), 'THRU': thru}
+          players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.isdigit() else 0), 'THRU': thru}
         except ValueError:
-          players[player] = {'POS': '?', 'TO PAR': '?', 'THRU': '?'}
+          players[player] = {'POS': '?', 'TO PAR': '?', 'TODAY': '?', 'THRU': '?'}
     else:
       tee_time = cols[tee_time_col].text.strip()
       players[player] = {'TEE TIME': tee_time}
@@ -113,6 +115,7 @@ def get_col_indecies(soup):
   pos_fields = ['POS']
   player_fields = ['PLAYER']
   to_par_fields = ['TO PAR', 'TOPAR', 'TO_PAR']
+  today_fields = ['TODAY']
   thru_fields = ['THRU']
   tee_time_fields = ['TEE TIME']
 
@@ -121,6 +124,7 @@ def get_col_indecies(soup):
   pos_col = None
   player_col = None
   score_col = None
+  today_col = None
   thru_col = None
   tee_time_col = None
 
@@ -135,6 +139,9 @@ def get_col_indecies(soup):
     if col_txt in to_par_fields:
       score_col = i
       continue
+    if col_txt in today_fields:
+      today_col = i
+      continue
     if col_txt in thru_fields:
       thru_col = i
       continue
@@ -146,7 +153,7 @@ def get_col_indecies(soup):
     print("Unable to track columns")
     exit()
 
-  return pos_col, player_col, score_col, thru_col, tee_time_col
+  return pos_col, player_col, score_col, today_col, thru_col, tee_time_col
 
 
 def verify_scrape(players):
@@ -185,8 +192,8 @@ def extract_json_data():
   status = soup.find_all("div", class_="status")[0].find_all("span")[0].text.upper()
   active = 'FINAL' not in status
 
-  pos_col, player_col, score_col, thru_col, tee_time_col = get_col_indecies(soup)
-  players = get_players(soup, pos_col, player_col, score_col, thru_col, tee_time_col)
+  pos_col, player_col, score_col, today_col, thru_col, tee_time_col = get_col_indecies(soup)
+  players = get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col)
 
   verify_scrape(players)
 
@@ -202,27 +209,28 @@ def print_table_data(jdata,tee_time_col,selected_players):
   for player in selected_players:
     if len(player) > w_player_col :
       w_player_col = len(player) + 2
-  w_pos_col = len("POS") + 3
-  w_scr_col = len("TO PAR") + 2
+  w_pos_col = len("POS") + 2
+  w_scr_col = len("TO PAR") + 3
+  w_today_col = len("TODAY") + 3
   w_thru_col = len("THRU    ") + 2
 
-  #calculate table width
+  #calculate table width and determine column headers
   w_table = w_player_col + len("TEE TIME") + 2
   w_table_offset = n_cols * 2 + 2
+  col_header = "| " + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * int(((w_player_col - 6)/2))) + " | TEE TIME |"
   if(n_cols > 2):
-    w_table = w_player_col + w_pos_col + w_scr_col + w_thru_col
+    w_table = w_player_col + w_pos_col + w_scr_col + w_today_col + w_thru_col
+    col_header = "|  POS  | " + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * int(((w_player_col - 6)/2))) + " |  TO PAR  |  TODAY  |   THRU    |"
 
   os.system('cls' if os.name == 'nt' else 'clear')
   player_print_cnt = 0
   #attempt to center tourney name
-  print((' ' * int((w_table + w_table_offset - len(str(jdata['Tournament'])))/2)) + str(jdata['Tournament']))
+  print(Fore.GREEN + (' ' * int((w_table + w_table_offset - len(str(jdata['Tournament'])))/2)) + str(jdata['Tournament']))
+  print(Fore.WHITE + '=' * (w_table + w_table_offset))
+  print(col_header)
   for player,value in jdata['Players'].items():
     if(player in selected_players):
-      # print horizontal divider above data row
-      if(player_print_cnt > 0):
-        print('-' * (w_table + w_table_offset))
-      else :
-        print('=' * (w_table + w_table_offset))
+      print('-' * (w_table + w_table_offset))
       
       #Colorize score
       score = str(value["TO PAR"])
@@ -234,6 +242,17 @@ def print_table_data(jdata,tee_time_col,selected_players):
         score_offset = 1
       else:
         score = 'E'
+      
+      #Colorize today's score
+      today = str(value["TODAY"])
+      today_offset = 0
+      if int(today) < 0:
+        today = Fore.RED + str(today) + Fore.WHITE
+      elif int(today) > 0:
+        today = Fore.CYAN + '+' + str(today) + Fore.WHITE
+        today_offset = 1
+      else:
+        today = 'E'
       
       #Colrize Thru
       thru = str(value["THRU"])
@@ -251,8 +270,9 @@ def print_table_data(jdata,tee_time_col,selected_players):
       else:
         pos_col_data = str(value["POS"]) + (' ' * (w_pos_col - len(str(value["POS"]))))
         scr_col_data = score + (' ' * (w_scr_col - len(str(value["TO PAR"]))- score_offset))
+        today_col_data = today + (' ' * (w_today_col - len(str(value["TODAY"])) - today_offset))
         thru_col_data = thru + (' ' * (w_thru_col - len(str(value["THRU"]))))
-        print('| ' + pos_col_data + ' |' + player_col_data + ' |' + scr_col_data + ' |' + thru_col_data + ' |')
+        print('| ' + pos_col_data + ' |' + player_col_data + ' |' + scr_col_data + ' |' + today_col_data + ' |' + thru_col_data + ' |')
       player_print_cnt = player_print_cnt + 1
   # print horizontal divider below table
   print('=' * (w_table + w_table_offset))
