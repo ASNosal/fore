@@ -5,9 +5,12 @@ import time
 import os
 import sys
 import signal
+from colorama import init
+from colorama import Fore, Back, Style
 
 #global variable
 catch_count = 0
+init()
 
 def handler(signum, frame):
     global default_handler, catch_count
@@ -222,6 +225,22 @@ def print_table_data(jdata,tee_time_col,selected_players):
       else :
         print('=' * (w_table + w_table_offset))
       
+      #Colorize score
+      score = str(value["TO PAR"])
+      if int(score) < 0:
+        score = Fore.RED + str(score) + Fore.WHITE
+      elif int(score) > 0:
+        score = Fore.CYAN + str(score) + Fore.WHITE
+      else:
+        score = str(score)
+      
+      #Colrize Thru
+      thru = str(value["THRU"])
+      if thru == 'F':
+        thru = Fore.RED + thru + Fore.WHITE
+      else:
+        thru = str(thru)
+      
       # print data row
       player_col_data = player +  (" " * (w_player_col - len(player)))
       if(tee_time_col is not None):
@@ -230,14 +249,15 @@ def print_table_data(jdata,tee_time_col,selected_players):
         print('| ' + player_col_data + ' |' + tee_time_col_data + ' |')
       else:
         pos_col_data = str(value["POS"]) + (' ' * (w_pos_col - len(str(value["POS"]))))
-        scr_col_data = str(value["TO PAR"]) + (' ' * (w_scr_col - len(str(value["TO PAR"]))))
-        thru_col_data = str(value["THRU"]) + (' ' * (w_thru_col - len(str(value["THRU"]))))
+        scr_col_data = score + (' ' * (w_scr_col - len(str(value["TO PAR"]))))
+        thru_col_data = thru + (' ' * (w_thru_col - len(str(value["THRU"]))))
         print('| ' + pos_col_data + ' |' + player_col_data + ' |' + scr_col_data + ' |' + thru_col_data + ' |')
       player_print_cnt = player_print_cnt + 1
   # print horizontal divider below table
   print('=' * (w_table + w_table_offset))
 
 run = True
+print(Style.BRIGHT + 'Fore!' + Style.NORMAL)
 signal.signal(signal.SIGINT, handler)
 default_handler = signal.getsignal(signal.SIGINT)
 
@@ -265,6 +285,7 @@ try:
         run = True
       
       elif command == 'Q' or command == 'q':
+        print('Fore!')
         raise KeyboardInterrupt
       
       elif command == 'R' or command =='r':
