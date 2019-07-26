@@ -278,7 +278,17 @@ def print_table_data(jdata,tee_time_col,selected_players):
   print('=' * (w_table + w_table_offset))
 
 run = True
-print(Style.BRIGHT + 'Fore!' + Style.NORMAL)
+#print(Style.BRIGHT + 'Fore!' + Style.NORMAL)
+print(Fore.GREEN + """\
+                           _  __ 
+                          | |/ _|
+                __ _  ___ | | |_ 
+              / _` |/ _ \| |  _|
+              | (_| | (_) | | |  
+              \__, |\___/|_|_|  
+               __/ |            
+              |____/             
+              """ + Fore.WHITE)
 signal.signal(signal.SIGINT, handler)
 default_handler = signal.getsignal(signal.SIGINT)
 
@@ -306,7 +316,17 @@ try:
         run = True
       
       elif command == 'Q' or command == 'q':
-        print('Fore!')
+        print(Fore.GREEN + """\
+                           _  __ 
+                          | |/ _|
+                __ _  ___ | | |_ 
+              / _` |/ _ \| |  _|
+              | (_| | (_) | | |  
+              \__, |\___/|_|_|  
+               __/ |            
+              |____/             
+              """ + Fore.WHITE)
+        #print('Fore!')
         raise KeyboardInterrupt
       
       elif command == 'R' or command =='r':
