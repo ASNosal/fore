@@ -102,6 +102,17 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
     
   return players
 
+def ascii_art():
+  os.system('cls' if os.name == 'nt' else 'clear')
+  print(Fore.GREEN + """\
+         _______  _______  ______    _______  __  
+        |       ||       ||    _ |  |       ||  | 
+        |    ___||   _   ||   | ||  |    ___||  | 
+        |   |___ |  | |  ||   |_||_ |   |___ |  | 
+        |    ___||  |_|  ||    __  ||    ___||__| 
+        |   |    |       ||   |  | ||   |___  __  
+        |___|    |_______||___|  |_||_______||__|              
+              """ + Fore.WHITE)
 
 def get_col_indecies(soup):
   header_rows = soup.find_all("tr", class_="Table2__header-row")
@@ -279,15 +290,7 @@ def print_table_data(jdata,tee_time_col,selected_players):
 
 run = True
 #print(Style.BRIGHT + 'Fore!' + Style.NORMAL)
-print(Fore.GREEN + """\
-         _______  _______  ______    _______  __  
-        |       ||       ||    _ |  |       ||  | 
-        |    ___||   _   ||   | ||  |    ___||  | 
-        |   |___ |  | |  ||   |_||_ |   |___ |  | 
-        |    ___||  |_|  ||    __  ||    ___||__| 
-        |   |    |       ||   |  | ||   |___  __  
-        |___|    |_______||___|  |_||_______||__|              
-              """ + Fore.WHITE)
+ascii_art()
 time.sleep(1)
 signal.signal(signal.SIGINT, handler)
 default_handler = signal.getsignal(signal.SIGINT)
@@ -316,15 +319,7 @@ try:
         run = True
       
       elif command == 'Q' or command == 'q':
-        print(Fore.GREEN + """\
-         _______  _______  ______    _______  __  
-        |       ||       ||    _ |  |       ||  | 
-        |    ___||   _   ||   | ||  |    ___||  | 
-        |   |___ |  | |  ||   |_||_ |   |___ |  | 
-        |    ___||  |_|  ||    __  ||    ___||__| 
-        |   |    |       ||   |  | ||   |___  __  
-        |___|    |_______||___|  |_||_______||__|             
-              """ + Fore.WHITE)
+        ascii_art()
         #print('Fore!')
         raise KeyboardInterrupt
       
