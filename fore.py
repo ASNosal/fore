@@ -227,10 +227,12 @@ def print_table_data(jdata,tee_time_col,selected_players):
       
       #Colorize score
       score = str(value["TO PAR"])
+      score_offset = 0
       if int(score) < 0:
         score = Fore.RED + str(score) + Fore.WHITE
       elif int(score) > 0:
         score = Fore.CYAN + '+' + str(score) + Fore.WHITE
+        score_offset = 1
       else:
         score = 'E'
       
@@ -249,7 +251,7 @@ def print_table_data(jdata,tee_time_col,selected_players):
         print('| ' + player_col_data + ' |' + tee_time_col_data + ' |')
       else:
         pos_col_data = str(value["POS"]) + (' ' * (w_pos_col - len(str(value["POS"]))))
-        scr_col_data = score + (' ' * (w_scr_col - len(str(value["TO PAR"]))))
+        scr_col_data = score + (' ' * (w_scr_col - len(str(value["TO PAR"]))- score_offset))
         thru_col_data = thru + (' ' * (w_thru_col - len(str(value["THRU"]))))
         print('| ' + pos_col_data + ' |' + player_col_data + ' |' + scr_col_data + ' |' + thru_col_data + ' |')
       player_print_cnt = player_print_cnt + 1
