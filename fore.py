@@ -232,7 +232,7 @@ def print_table_data(jdata,tee_time_col,selected_players):
       elif int(score) > 0:
         score = Fore.CYAN + '+' + str(score) + Fore.WHITE
       else:
-        score = str(score)
+        score = 'E'
       
       #Colrize Thru
       thru = str(value["THRU"])
