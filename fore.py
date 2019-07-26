@@ -90,10 +90,10 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
         players[player] = {'POS': pos, 'TO PAR': 'DQ', 'TODAY': '-', 'THRU': thru}
         continue
       elif score == 'E':
-        players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.isdigit() else 0), 'THRU': thru}
+        players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
       else:
         try:
-          players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.isdigit() else 0), 'THRU': thru}
+          players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
         except ValueError:
           players[player] = {'POS': '?', 'TO PAR': '?', 'TODAY': '?', 'THRU': '?'}
     else:
