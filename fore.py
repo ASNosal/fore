@@ -280,15 +280,15 @@ def print_table_data(jdata,tee_time_col,selected_players):
 run = True
 #print(Style.BRIGHT + 'Fore!' + Style.NORMAL)
 print(Fore.GREEN + """\
-                           _  __ 
-                          | |/ _|
-                __ _  ___ | | |_ 
-              / _` |/ _ \| |  _|
-              | (_| | (_) | | |  
-              \__, |\___/|_|_|  
-               __/ |            
-              |____/             
+         _______  _______  ______    _______  __  
+        |       ||       ||    _ |  |       ||  | 
+        |    ___||   _   ||   | ||  |    ___||  | 
+        |   |___ |  | |  ||   |_||_ |   |___ |  | 
+        |    ___||  |_|  ||    __  ||    ___||__| 
+        |   |    |       ||   |  | ||   |___  __  
+        |___|    |_______||___|  |_||_______||__|              
               """ + Fore.WHITE)
+time.sleep(1)
 signal.signal(signal.SIGINT, handler)
 default_handler = signal.getsignal(signal.SIGINT)
 
@@ -317,14 +317,13 @@ try:
       
       elif command == 'Q' or command == 'q':
         print(Fore.GREEN + """\
-                           _  __ 
-                          | |/ _|
-                __ _  ___ | | |_ 
-              / _` |/ _ \| |  _|
-              | (_| | (_) | | |  
-              \__, |\___/|_|_|  
-               __/ |            
-              |____/             
+         _______  _______  ______    _______  __  
+        |       ||       ||    _ |  |       ||  | 
+        |    ___||   _   ||   | ||  |    ___||  | 
+        |   |___ |  | |  ||   |_||_ |   |___ |  | 
+        |    ___||  |_|  ||    __  ||    ___||__| 
+        |   |    |       ||   |  | ||   |___  __  
+        |___|    |_______||___|  |_||_______||__|             
               """ + Fore.WHITE)
         #print('Fore!')
         raise KeyboardInterrupt
