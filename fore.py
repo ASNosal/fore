@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import json
 import time
 import os
 import sys
@@ -174,15 +173,12 @@ def verify_scrape(players):
 
   bad_entry_count = 0
   for key, value in players.items():
-    if('TO PAR' in list(players.values())[0].keys()):
+    if('TO PAR' in list(value.keys())):
       scr = players[key]['TO PAR']
     else:
       scr = players[key]['TEE TIME']
     if scr == '?':
       bad_entry_count += 1
-    if bad_entry_count > 0:
-      print("Bad data entry, exiting")
-      exit()
 
   if bad_entry_count > 3:
     # arbitrary number here, I figure this is enough bad entries to call it a bad pull
@@ -196,9 +192,9 @@ def get_tournament_name(soup):
   return tournament_name
 
 
-def extract_json_data():
+def extract_tourney_data():
   result = requests.get("http://www.espn.com/golf/leaderboard")
-  soup = BeautifulSoup(result.text, "lxml")
+  soup = BeautifulSoup(result.text, "html.parser")
 
   status = soup.find_all("div", class_="status")[0].find_all("span")[0].text.upper()
   active = 'FINAL' not in status
@@ -306,7 +302,7 @@ selected_players = read_player_file()
 
 try:
   while run == True:
-    jdata,tee_time_col = extract_json_data()
+    jdata,tee_time_col = extract_tourney_data()
     print_table_data(jdata,tee_time_col,selected_players)
     
     # sleep for a minute unless an interrupt is caught

@@ -7,7 +7,7 @@ It is based on [jmstjordan/PGALiveLeaderboard](https://github.com/jmstjordan/PGA
 Requires BeautifulSoup(bs4) and Requests (requests) python libraries.
 
 ```bash
-pip install bs4 requests lxml colorama
+pip install bs4 requests colorama
 ```
 
 ## Usage
