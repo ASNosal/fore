@@ -213,6 +213,10 @@ def extract_json_data():
   return data,tee_time_col
 
 def print_table_data(jdata,tee_time_col,selected_players):
+  #Show leader?
+  leader = list(jdata['Players'].keys())[0]
+  if leader_flag is True:
+    selected_players.append(leader)
   # determine number of columns
   n_cols = len(jdata['Players'][selected_players[0]].items()) + 1
   # determine width of potential columns
@@ -287,8 +291,11 @@ def print_table_data(jdata,tee_time_col,selected_players):
       player_print_cnt = player_print_cnt + 1
   # print horizontal divider below table
   print('=' * (w_table + w_table_offset))
+  if leader_flag is True:
+    selected_players.remove(leader)
 
 run = True
+leader_flag = False #Disable leader display by default
 #print(Style.BRIGHT + 'Fore!' + Style.NORMAL)
 ascii_art()
 time.sleep(1)
@@ -311,7 +318,7 @@ try:
     
     if catch_count in range(1,3):
       
-      command = input('Press G to add golfer to list, R to remove a golfer or Q to Quit: ')
+      command = input('Press G to add golfer to list, R to remove a golfer, L to show/hide the Leader or Q to Quit: ')
       
       if command == 'G' or command =='g':
         selected_players.append(str(add_new_golfer()))
@@ -325,6 +332,11 @@ try:
       
       elif command == 'R' or command =='r':
         remove_golfer()
+        catch_count = 0
+        run = True
+        
+      elif command == 'L' or command =='l':
+        leader_flag = not leader_flag
         catch_count = 0
         run = True
 
