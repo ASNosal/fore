@@ -78,7 +78,7 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
     if(tee_time_col is None):
       pos = cols[pos_col].text.strip()
       score = cols[score_col].text.strip().upper()
-      today = cols[today_col].text.strip().upper()
+      today = cols[today_col].text.strip().upper() if today_col else "-"
       thru = cols[thru_col].text.strip() if thru_col else "F"
       if score == 'CUT':
         players[player] = {'POS': pos, 'TO PAR': 'CUT', 'TODAY': '-', 'THRU': thru}
