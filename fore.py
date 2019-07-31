@@ -243,35 +243,6 @@ def print_table_data(jdata,tee_time_col,selected_players):
     if(player in selected_players):
       print('-' * (w_table + w_table_offset))
       
-      #Colorize score
-      score = str(value["TO PAR"])
-      score_offset = 0
-      if int(score) < 0:
-        score = Fore.RED + str(score) + Fore.WHITE
-      elif int(score) > 0:
-        score = Fore.CYAN + '+' + str(score) + Fore.WHITE
-        score_offset = 1
-      else:
-        score = 'E'
-      
-      #Colorize today's score
-      today = str(value["TODAY"])
-      today_offset = 0
-      if int(today) < 0:
-        today = Fore.RED + str(today) + Fore.WHITE
-      elif int(today) > 0:
-        today = Fore.CYAN + '+' + str(today) + Fore.WHITE
-        today_offset = 1
-      else:
-        today = 'E'
-      
-      #Colrize Thru
-      thru = str(value["THRU"])
-      if thru == 'F':
-        thru = Fore.RED + thru + Fore.WHITE
-      else:
-        thru = str(thru)
-      
       # print data row
       player_col_data = player +  (" " * (w_player_col - len(player)))
       if(tee_time_col is not None):
@@ -279,6 +250,35 @@ def print_table_data(jdata,tee_time_col,selected_players):
         tee_time_col_data = (" " * (w_table - w_player_col - len(tee_time))) + tee_time
         print('| ' + player_col_data + ' |' + tee_time_col_data + ' |')
       else:
+        #Colorize score
+        score = str(value["TO PAR"])
+        score_offset = 0
+        if int(score) < 0:
+          score = Fore.RED + str(score) + Fore.WHITE
+        elif int(score) > 0:
+          score = Fore.CYAN + '+' + str(score) + Fore.WHITE
+          score_offset = 1
+        else:
+          score = 'E'
+      
+        #Colorize today's score
+        today = str(value["TODAY"])
+        today_offset = 0
+        if int(today) < 0:
+          today = Fore.RED + str(today) + Fore.WHITE
+        elif int(today) > 0:
+          today = Fore.CYAN + '+' + str(today) + Fore.WHITE
+          today_offset = 1
+        else:
+          today = 'E'
+      
+        #Colrize Thru
+        thru = str(value["THRU"])
+        if thru == 'F':
+          thru = Fore.RED + thru + Fore.WHITE
+        else:
+          thru = str(thru)
+          
         pos_col_data = str(value["POS"]) + (' ' * (w_pos_col - len(str(value["POS"]))))
         scr_col_data = score + (' ' * (w_scr_col - len(str(value["TO PAR"]))- score_offset))
         today_col_data = today + (' ' * (w_today_col - len(str(value["TODAY"])) - today_offset))
