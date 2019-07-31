@@ -228,7 +228,7 @@ def print_table_data(jdata,tee_time_col,selected_players):
   #calculate table width and determine column headers
   w_table = w_player_col + len("TEE TIME") + 2
   w_table_offset = n_cols * 2 + 2
-  col_header = "| " + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * int(((w_player_col - 6)/2))) + " | TEE TIME |"
+  col_header = "| " + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * int(((w_player_col - 6)/2))) + " |  TEE TIME |"
   if(n_cols > 2):
     w_table = w_player_col + w_pos_col + w_scr_col + w_today_col + w_thru_col
     col_header = "|  POS  |" + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * round(((w_player_col - 6)/2))) + " |  TO PAR  |  TODAY  |   THRU    |"
