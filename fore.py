@@ -211,7 +211,7 @@ def extract_tourney_data():
 def print_table_data(jdata,tee_time_col,selected_players):
   #Show leader?
   leader = list(jdata['Players'].keys())[0]
-  if leader_flag is True:
+  if leader_flag is True and tee_time_col is None:
     selected_players.append(leader)
   # determine number of columns
   n_cols = len(jdata['Players'][selected_players[0]].items()) + 1
@@ -287,7 +287,7 @@ def print_table_data(jdata,tee_time_col,selected_players):
       player_print_cnt = player_print_cnt + 1
   # print horizontal divider below table
   print('=' * (w_table + w_table_offset))
-  if leader_flag is True:
+  if leader_flag is True and tee_time_col is None:
     selected_players.remove(leader)
 
 run = True
