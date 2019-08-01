@@ -24,7 +24,7 @@ def create_player_file():
   new_golfers = input('Type first and last name of golfers separated by commas: ')
   player_file = open("golfers.txt", 'w+')
   for new_golfer in new_golfers.split(', '):
-    player_file.write(str(new_golfer) + '\n')
+    player_file.write(str(new_golfer.title()) + '\n')
   player_file.close()
 
 def read_player_file():
@@ -44,18 +44,18 @@ def read_player_file():
 def add_new_golfer():
   new_golfer = input('Type first and last name of golfer: ')
   player_file = open("golfers.txt", 'a')
-  player_file.write(str(new_golfer) + '\n')
+  player_file.write(str(new_golfer.title()) + '\n')
   player_file.close()
-  print(Fore.GREEN + str(new_golfer) + ' added!' + Fore.WHITE)
-  return new_golfer
+  print(Fore.GREEN + str(new_golfer.title()) + ' added!' + Fore.WHITE)
+  return new_golfer.title()
 
 def remove_golfer():
   bye_golfer = input('Type first and last name of golfer to remove: ')
-  if bye_golfer in selected_players:
-    selected_players.remove(bye_golfer)
-    print(Fore.RED + str(bye_golfer) + ' removed!' + Fore.WHITE)
+  if bye_golfer.title() in selected_players:
+    selected_players.remove(bye_golfer.title())
+    print(Fore.RED + str(bye_golfer.title()) + ' removed!' + Fore.WHITE)
   else:
-    print(Fore.RED + bye_golfer + ' NOT IN YOUR LIST!' + Fore.WHITE)
+    print(Fore.RED + bye_golfer.title() + ' NOT IN YOUR LIST!' + Fore.WHITE)
     
   player_file = open("golfers.txt", 'w+')
   for dude in selected_players:
