@@ -240,7 +240,7 @@ def print_table_data(jdata,tee_time_col,selected_players):
   print(Fore.WHITE + '=' * (w_table + w_table_offset))
   print(col_header)
   for player,value in jdata['Players'].items():
-    if(player in selected_players):
+    if(player.title() in selected_players):
       print('-' * (w_table + w_table_offset))
       
       # print data row
