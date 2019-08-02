@@ -73,33 +73,38 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
   for row in rows[1:]:
     cols = row.find_all("td")
     
-    player = cols[player_col].text.strip()
-    if(tee_time_col is None):
-      pos = cols[pos_col].text.strip()
-      score = cols[score_col].text.strip().upper()
-      today = cols[today_col].text.strip().upper() if today_col else "-"
-      thru = cols[thru_col].text.strip() if thru_col else "F"
-      if score == 'CUT':
-        players[player] = {'POS': pos, 'TO PAR': 'CUT', 'TODAY': '-', 'THRU': thru}
-        continue
-      elif score == 'WD':
-        players[player] = {'POS': pos, 'TO PAR': 'WD', 'TODAY': '-', 'THRU': thru}
-        continue
-      elif score == 'DQ':
-        players[player] = {'POS': pos, 'TO PAR': 'DQ', 'TODAY': '-', 'THRU': thru}
-        continue
-      elif score == 'E':
-        players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
-      else:
-        try:
-          players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
-        except ValueError:
-          players[player] = {'POS': '?', 'TO PAR': '?', 'TODAY': '?', 'THRU': '?'}
+    if('Projected Cut' in cols[0].text):
+      projected_cut = cols[0].text
+      
+    elif('Projected Cut' not in cols[0].text):   
+      player = cols[player_col].text.strip()
+      if(tee_time_col is None):
+        pos = cols[pos_col].text.strip()
+        score = cols[score_col].text.strip().upper()
+        today = cols[today_col].text.strip().upper() if today_col else "-"
+        thru = cols[thru_col].text.strip() if thru_col else "F"
+        if score == 'CUT':
+          players[player] = {'POS': pos, 'TO PAR': 'CUT', 'TODAY': '-', 'THRU': thru}
+          continue
+        elif score == 'WD':
+          players[player] = {'POS': pos, 'TO PAR': 'WD', 'TODAY': '-', 'THRU': thru}
+          continue
+        elif score == 'DQ':
+          players[player] = {'POS': pos, 'TO PAR': 'DQ', 'TODAY': '-', 'THRU': thru}
+          continue
+        elif score == 'E':
+          players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
+        else:
+          try:
+            players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
+          except ValueError:
+            players[player] = {'POS': '?', 'TO PAR': '?', 'TODAY': '?', 'THRU': '?'}
     else:
       tee_time = cols[tee_time_col].text.strip()
+      projected_cut = None
       players[player] = {'TEE TIME': tee_time}
     
-  return players
+  return players, projected_cut
 
 def ascii_art():
   os.system('cls' if os.name == 'nt' else 'clear')
@@ -200,15 +205,15 @@ def extract_tourney_data():
   active = 'FINAL' not in status
 
   pos_col, player_col, score_col, today_col, thru_col, tee_time_col = get_col_indecies(soup)
-  players = get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col)
+  players, projected_cut = get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col)
 
   verify_scrape(players)
 
   data = {'Tournament': get_tournament_name(soup), 'IsActive': active, 'Players': players}
 
-  return data,tee_time_col
+  return data,tee_time_col, projected_cut
 
-def print_table_data(jdata,tee_time_col,selected_players):
+def print_table_data(jdata,tee_time_col,selected_players, projected_cut):
   #Show leader?
   leader = list(jdata['Players'].keys())[0]
   if leader_flag is True and tee_time_col is None:
@@ -287,6 +292,10 @@ def print_table_data(jdata,tee_time_col,selected_players):
       player_print_cnt = player_print_cnt + 1
   # print horizontal divider below table
   print('=' * (w_table + w_table_offset))
+  
+  if projected_cut is not None:
+    print((' ' * int((w_table + w_table_offset - len(str(projected_cut)))/2)) + str(projected_cut))
+  
   if leader_flag is True and tee_time_col is None:
     selected_players.remove(leader)
 
@@ -302,8 +311,8 @@ selected_players = read_player_file()
 
 try:
   while run == True:
-    jdata,tee_time_col = extract_tourney_data()
-    print_table_data(jdata,tee_time_col,selected_players)
+    jdata,tee_time_col, projected_cut = extract_tourney_data()
+    print_table_data(jdata,tee_time_col,selected_players, projected_cut)
     
     # sleep for a minute unless an interrupt is caught
     for i in range(60):
