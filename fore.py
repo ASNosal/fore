@@ -223,7 +223,7 @@ def print_table_data(jdata,tee_time_col,selected_players, projected_cut):
   # determine width of potential columns
   w_player_col = 0
   for player in selected_players:
-    if len(player) > w_player_col :
+    if len(player) >= w_player_col :
       w_player_col = len(player) + 1
   w_pos_col = len("POS") + 2
   w_scr_col = len("TO PAR") + 3
