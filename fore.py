@@ -70,13 +70,14 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
   today = ''
   thru = ''
   tee_time = ''
+  projected_cut = None
   for row in rows[1:]:
     cols = row.find_all("td")
     
     if('Projected Cut' in cols[0].text):
       projected_cut = cols[0].text
       
-    elif('Projected Cut' not in cols[0].text):   
+    else:   
       player = cols[player_col].text.strip()
       if(tee_time_col is None):
         pos = cols[pos_col].text.strip()
@@ -99,10 +100,9 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
             players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
           except ValueError:
             players[player] = {'POS': '?', 'TO PAR': '?', 'TODAY': '?', 'THRU': '?'}
-    else:
-      tee_time = cols[tee_time_col].text.strip()
-      projected_cut = None
-      players[player] = {'TEE TIME': tee_time}
+      else:
+        tee_time = cols[tee_time_col].text.strip()
+        players[player] = {'TEE TIME': tee_time}
     
   return players, projected_cut
 
@@ -258,7 +258,9 @@ def print_table_data(jdata,tee_time_col,selected_players, projected_cut):
         #Colorize score
         score = str(value["TO PAR"])
         score_offset = 0
-        if int(score) < 0:
+        if(not score.lstrip('+').lstrip('-').isdigit()):
+          score = Fore.MAGENTA + str(score) + Fore.WHITE
+        elif int(score) < 0:
           score = Fore.RED + str(score) + Fore.WHITE
         elif int(score) > 0:
           score = Fore.CYAN + '+' + str(score) + Fore.WHITE
@@ -269,7 +271,9 @@ def print_table_data(jdata,tee_time_col,selected_players, projected_cut):
         #Colorize today's score
         today = str(value["TODAY"])
         today_offset = 0
-        if int(today) < 0:
+        if(not today.lstrip('+').lstrip('-').isdigit()):
+          today = str(today)
+        elif int(today) < 0:
           today = Fore.RED + str(today) + Fore.WHITE
         elif int(today) > 0:
           today = Fore.CYAN + '+' + str(today) + Fore.WHITE
