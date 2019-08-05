@@ -74,9 +74,9 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
   for row in rows[1:]:
     cols = row.find_all("td")
     
-    if('Projected Cut' in cols[0].text):
-      projected_cut = cols[0].text
-      
+    if(len(cols) < 2):
+      if('Projected Cut' in cols[0].text):
+        projected_cut = cols[0].text
     else:   
       player = cols[player_col].text.strip()
       if(tee_time_col is None):
