@@ -3,6 +3,8 @@ Fore! is a console based PGA leaderboard that can be configured to display the c
 
 It is based on [jmstjordan/PGALiveLeaderboard](https://github.com/jmstjordan/PGALiveLeaderboard)
 
+![image](https://user-images.githubusercontent.com/53181907/62486521-861f9800-b78d-11e9-8aa2-fe522ba961a0.png)
+
 ## Dependencies
 Requires BeautifulSoup(bs4) and Requests (requests) python libraries.
 
@@ -16,8 +18,6 @@ Replace golfer names in golfers.txt with golfers to be tracked.
 ```bash
 python fore.py
 ```
-
-![image](https://user-images.githubusercontent.com/53181907/62486237-b581d500-b78c-11e9-81d8-f2b20588e76c.png)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
