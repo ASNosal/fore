@@ -17,5 +17,7 @@ Replace golfer names in golfers.txt with golfers to be tracked.
 python fore.py
 ```
 
+![image](https://user-images.githubusercontent.com/53181907/62486237-b581d500-b78c-11e9-81d8-f2b20588e76c.png)
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
