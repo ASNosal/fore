@@ -223,7 +223,7 @@ def print_table_data(jdata,tee_time_col,selected_players, projected_cut):
   if leader_flag is True and tee_time_col is None:
     selected_players.append(leader)
   # determine number of columns
-  n_cols = len(jdata['Players'][selected_players[0]].items()) + 1
+  n_cols = len(jdata['Players'][list(jdata['Players'].keys())[0]].items()) + 1
   # determine width of potential columns
   w_player_col = 0
   for player in selected_players:
