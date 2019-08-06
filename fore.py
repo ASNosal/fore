@@ -4,6 +4,7 @@ import time
 import os
 import sys
 import signal
+import math
 from colorama import init
 from colorama import Fore, Back, Style
 
@@ -22,10 +23,9 @@ def handler(signum, frame):
 
 def create_player_file():
   new_golfers = input('Type first and last name of golfers separated by commas: ')
-  player_file = open("golfers.txt", 'w+')
   for new_golfer in new_golfers.split(', '):
-    player_file.write(str(new_golfer.title()) + '\n')
-  player_file.close()
+    add_golfer(new_golfer)
+  
 
 def read_player_file():
   selected_players = []
@@ -43,11 +43,15 @@ def read_player_file():
 
 def add_new_golfer():
   new_golfer = input('Type first and last name of golfer: ')
-  player_file = open("golfers.txt", 'a')
-  player_file.write(str(new_golfer.title()) + '\n')
-  player_file.close()
+  add_golfer(new_golfer)
   print(Fore.GREEN + str(new_golfer.title()) + ' added!' + Fore.WHITE)
   return new_golfer.title()
+
+def add_golfer(golfer):
+  #TODO: similarity checking here - scraped data should be passed in
+  player_file = open("golfers.txt", 'a')
+  player_file.write(str(golfer.title()) + '\n')
+  player_file.close()
 
 def remove_golfer():
   bye_golfer = input('Type first and last name of golfer to remove: ')
@@ -233,10 +237,10 @@ def print_table_data(jdata,tee_time_col,selected_players, projected_cut):
   #calculate table width and determine column headers
   w_table = w_player_col + len("TEE TIME") + 2
   w_table_offset = n_cols * 2 + 2
-  col_header = "| " + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * int(((w_player_col - 6)/2))) + " |  TEE TIME |"
+  col_header = "| " + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * math.ceil(((w_player_col - 6)/2))) + " |  TEE TIME |"
   if(n_cols > 2):
     w_table = w_player_col + w_pos_col + w_scr_col + w_today_col + w_thru_col
-    col_header = "|  POS  |" + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * round(((w_player_col - 6)/2))) + " |  TO PAR  |  TODAY  |   THRU    |"
+    col_header = "|  POS  |" + (' ' * int(((w_player_col - 6)/2))) + "PLAYER" + (' ' * math.ceil(((w_player_col - 6)/2))) + " |  TO PAR  |  TODAY  |   THRU    |"
 
   os.system('cls' if os.name == 'nt' else 'clear')
   player_print_cnt = 0
@@ -311,6 +315,7 @@ time.sleep(1)
 signal.signal(signal.SIGINT, handler)
 default_handler = signal.getsignal(signal.SIGINT)
 
+#TODO: pass scraped data into read_player_file for similarity checking
 selected_players = read_player_file()
 
 try:
@@ -330,6 +335,7 @@ try:
       command = input('Press G to add golfer to list, R to remove a golfer, L to show/hide the Leader or Q to Quit: ')
       
       if command == 'G' or command =='g':
+        #TODO: pass scraped data into add_new_golfer for similarity checking
         selected_players.append(str(add_new_golfer()))
         catch_count = 0
         run = True
