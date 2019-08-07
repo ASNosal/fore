@@ -5,6 +5,7 @@ import os
 import sys
 import signal
 import math
+from difflib import SequenceMatcher
 from colorama import init
 from colorama import Fore, Back, Style
 
@@ -65,6 +66,16 @@ def remove_golfer():
   for dude in selected_players:
     player_file.write(str(dude) + '\n')
   player_file.close()
+
+def rate_player_similarity(player1, player2):
+  player1 = player1.lower()
+  player2 = player2.lower()
+  player1_first = player1.split(' ')[0]
+  player2_first = player2.split(' ')[0]
+  player1_last = player1.split(' ')[1]
+  player2_last = player2.split(' ')[1]
+  ratio = SequenceMatcher(None, player1_first, player2_first).ratio() + SequenceMatcher(None, player1_last, player2_last).ratio()
+  return ratio
 
 def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col):
   rows = soup.find_all("tr", class_="Table2__tr")
