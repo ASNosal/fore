@@ -37,7 +37,7 @@ def read_player_file():
 
   player_file = open("golfers.txt")
   for player in player_file:
-    selected_players.append(player.rstrip("\n"))
+    selected_players.append(player.rstrip("\n").title())
   player_file.close()
 
   return selected_players
