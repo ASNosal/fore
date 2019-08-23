@@ -37,7 +37,7 @@ def read_player_file(jdata):
 
   player_file = open("golfers.txt")
   for player in player_file:
-    selected_players.append(player.rstrip("\n").title())
+    selected_players.append(player.rstrip("\n"))
   player_file.close()
 
   return selected_players
@@ -53,9 +53,9 @@ def add_golfer(golfer, jdata):
     golfer_in_tourney = rate_player_similarity(golfer, dude)
     if golfer_in_tourney:
       player_file = open("golfers.txt", 'a')
-      player_file.write(str(dude).title() + '\n')
+      player_file.write(str(dude) + '\n')
       player_file.close()
-      return dude.title()
+      return dude
     else:
       continue
 
@@ -268,7 +268,7 @@ def print_table_data(jdata,tee_time_col,selected_players, projected_cut):
   print(Fore.WHITE + '=' * (w_table + w_table_offset))
   print(col_header)
   for player,value in jdata['Players'].items():
-    if(player.title() in selected_players):
+    if(player in selected_players):
       print('-' * (w_table + w_table_offset))
       
       # print data row
