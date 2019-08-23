@@ -42,25 +42,36 @@ def read_player_file():
 
   return selected_players
 
-def add_new_golfer():
+def add_new_golfer(jdata):
   new_golfer = input('Type first and last name of golfer: ')
-  add_golfer(new_golfer)
-  print(Fore.GREEN + str(new_golfer.title()) + ' added!' + Fore.WHITE)
-  return new_golfer.title()
+  dude = add_golfer(new_golfer,jdata)
+  print(Fore.GREEN + str(dude) + ' added!' + Fore.WHITE)
+  return dude
 
-def add_golfer(golfer):
+def add_golfer(golfer, jdata):
   #TODO: similarity checking here - scraped data should be passed in
-  player_file = open("golfers.txt", 'a')
-  player_file.write(str(golfer.title()) + '\n')
-  player_file.close()
+  for dude in jdata['Players']:
+    #print(str(dude) + '   ' + str(golfer))
+    golfer_in_tourney = rate_player_similarity(golfer, dude)
+    if golfer_in_tourney is True:
+      player_file = open("golfers.txt", 'a')
+      player_file.write(str(dude) + '\n')
+      player_file.close()
+      read_player_file()
+      return dude
+      break
+    else:
+      continue
 
 def remove_golfer():
   bye_golfer = input('Type first and last name of golfer to remove: ')
-  if bye_golfer.title() in selected_players:
-    selected_players.remove(bye_golfer.title())
-    print(Fore.RED + str(bye_golfer.title()) + ' removed!' + Fore.WHITE)
+  for guy in selected_players:
+    golfer_in_list = rate_player_similarity(bye_golfer, guy)
+    if golfer_in_list is True:
+      selected_players.remove(guy)
+    print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)
   else:
-    print(Fore.RED + bye_golfer.title() + ' NOT IN YOUR LIST!' + Fore.WHITE)
+    print(Fore.RED + str(bye_golfer) + ' NOT IN YOUR LIST!' + Fore.WHITE)
     
   player_file = open("golfers.txt", 'w+')
   for dude in selected_players:
@@ -75,7 +86,11 @@ def rate_player_similarity(player1, player2):
   player1_last = player1.split(' ')[1]
   player2_last = player2.split(' ')[1]
   ratio = SequenceMatcher(None, player1_first, player2_first).ratio() + SequenceMatcher(None, player1_last, player2_last).ratio()
-  return ratio
+  print(ratio)
+  if ratio >= 1.5:
+    return True
+  else:
+    return False
 
 def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col):
   rows = soup.find_all("tr", class_="Table2__tr")
@@ -347,7 +362,7 @@ try:
       
       if command == 'G' or command =='g':
         #TODO: pass scraped data into add_new_golfer for similarity checking
-        selected_players.append(str(add_new_golfer()))
+        selected_players.append(str(add_new_golfer(jdata)))
         catch_count = 0
         run = True
       
