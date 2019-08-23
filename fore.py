@@ -22,18 +22,18 @@ def handler(signum, frame):
         signal.signal(signal.SIGINT, default_handler)
         print('***STOPPING***')
 
-def create_player_file():
+def create_player_file(jdata):
   new_golfers = input('Type first and last name of golfers separated by commas: ')
   for new_golfer in new_golfers.split(', '):
-    add_golfer(new_golfer)
+    add_golfer(new_golfer,jdata)
   
 
-def read_player_file():
+def read_player_file(jdata):
   selected_players = []
   
   # create golfers.txt if it does not already exist
   if(not os.path.isfile("golfers.txt")):
-    create_player_file()
+    create_player_file(jdata)
 
   player_file = open("golfers.txt")
   for player in player_file:
@@ -49,17 +49,13 @@ def add_new_golfer(jdata):
   return dude
 
 def add_golfer(golfer, jdata):
-  #TODO: similarity checking here - scraped data should be passed in
   for dude in jdata['Players']:
-    #print(str(dude) + '   ' + str(golfer))
     golfer_in_tourney = rate_player_similarity(golfer, dude)
-    if golfer_in_tourney is True:
+    if golfer_in_tourney:
       player_file = open("golfers.txt", 'a')
-      player_file.write(str(dude) + '\n')
+      player_file.write(str(dude).title() + '\n')
       player_file.close()
-      read_player_file()
-      return dude
-      break
+      return dude.title()
     else:
       continue
 
@@ -67,11 +63,9 @@ def remove_golfer():
   bye_golfer = input('Type first and last name of golfer to remove: ')
   for guy in selected_players:
     golfer_in_list = rate_player_similarity(bye_golfer, guy)
-    if golfer_in_list is True:
+    if golfer_in_list:
       selected_players.remove(guy)
-    print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)
-  else:
-    print(Fore.RED + str(bye_golfer) + ' NOT IN YOUR LIST!' + Fore.WHITE)
+      print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)
     
   player_file = open("golfers.txt", 'w+')
   for dude in selected_players:
@@ -86,7 +80,6 @@ def rate_player_similarity(player1, player2):
   player1_last = player1.split(' ')[1]
   player2_last = player2.split(' ')[1]
   ratio = SequenceMatcher(None, player1_first, player2_first).ratio() + SequenceMatcher(None, player1_last, player2_last).ratio()
-  print(ratio)
   if ratio >= 1.5:
     return True
   else:
@@ -341,8 +334,10 @@ time.sleep(1)
 signal.signal(signal.SIGINT, handler)
 default_handler = signal.getsignal(signal.SIGINT)
 
+jdata,tee_time_col, projected_cut = extract_tourney_data()
+
 #TODO: pass scraped data into read_player_file for similarity checking
-selected_players = read_player_file()
+selected_players = read_player_file(jdata)
 
 try:
   while run == True:
@@ -362,7 +357,9 @@ try:
       
       if command == 'G' or command =='g':
         #TODO: pass scraped data into add_new_golfer for similarity checking
-        selected_players.append(str(add_new_golfer(jdata)))
+        dude = str(add_new_golfer(jdata))
+        print(dude)
+        selected_players.append(dude)
         catch_count = 0
         run = True
       
