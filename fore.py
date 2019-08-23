@@ -73,13 +73,9 @@ def remove_golfer():
   player_file.close()
 
 def rate_player_similarity(player1, player2):
-  player1 = player1.lower()
-  player2 = player2.lower()
-  player1_first = player1.split(' ')[0]
-  player2_first = player2.split(' ')[0]
-  player1_last = player1.split(' ')[1]
-  player2_last = player2.split(' ')[1]
-  ratio = SequenceMatcher(None, player1_first, player2_first).ratio() + SequenceMatcher(None, player1_last, player2_last).ratio()
+  player1_split = player1.lower().split(' ')
+  player2_split = player2.lower().split(' ')
+  ratio = SequenceMatcher(None, player1_split[0], player2_split[0]).ratio() + SequenceMatcher(None, player1_split[1], player2_split[1]).ratio()
   if ratio >= 1.5:
     return True
   else:
@@ -357,9 +353,9 @@ try:
       
       if command == 'G' or command =='g':
         #TODO: pass scraped data into add_new_golfer for similarity checking
-        dude = str(add_new_golfer(jdata))
-        print(dude)
-        selected_players.append(dude)
+        dude = add_new_golfer(jdata)
+        if(dude is not None):
+          selected_players.append(str(dude))
         catch_count = 0
         run = True
       
