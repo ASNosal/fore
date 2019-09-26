@@ -82,7 +82,7 @@ def rate_player_similarity(player1, player2):
     return False
 
 def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col):
-  rows = soup.find_all("tr", class_="Table2__tr")
+  rows = soup.find_all("tr", class_="Table__TR Table__even")
   players = {}
   pos = ''
   score = ''
@@ -138,7 +138,7 @@ def ascii_art():
               """ + Fore.WHITE)
 
 def get_col_indecies(soup):
-  header_rows = soup.find_all("tr", class_="Table2__header-row")
+  header_rows = soup.find_all("tr", class_="Table__TR")
 
   # ensure tournament data exists
   if len(header_rows) == 0 :
@@ -211,8 +211,7 @@ def verify_scrape(players):
 
 
 def get_tournament_name(soup):
-  tournament_name = soup.find_all(
-    "h1", class_="headline__h1 Leaderboard__Event__Title")[0].text
+  tournament_name = soup.find_all("h1", class_="headline headline__h1 Leaderboard__Event__Title")[0].text
   return tournament_name
 
 
