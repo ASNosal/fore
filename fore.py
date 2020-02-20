@@ -217,7 +217,7 @@ def get_tournament_name(soup):
 
 
 def extract_tourney_data():
-  result = requests.get("http://www.espn.com/golf/leaderboard")
+  result = requests.get("https://www.espn.com/golf/leaderboard")
   soup = BeautifulSoup(result.text, "html.parser")
 
   status = soup.find_all("div", class_="status")[0].find_all("span")[0].text.upper()
