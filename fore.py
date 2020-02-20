@@ -82,7 +82,8 @@ def rate_player_similarity(player1, player2):
     return False
 
 def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col):
-  rows = soup.find_all("tr", class_="Table2__tr")
+  rows = soup.find_all("tr", class_="Table__TR Table__even")
+  cut_row = soup.find_all("tr", class_="cutline Table__TR Table__even")
   players = {}
   pos = ''
   score = ''
@@ -90,38 +91,41 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
   thru = ''
   tee_time = ''
   projected_cut = None
-  for row in rows[1:]:
+
+  #extract projected cut
+  for row in cut_row:
     cols = row.find_all("td")
-    
     if(len(cols) < 2):
-      if('Projected Cut' in cols[0].text):
-        projected_cut = cols[0].text
-    else:   
-      player = cols[player_col].text.strip()
-      if(tee_time_col is None):
-        pos = cols[pos_col].text.strip()
-        score = cols[score_col].text.strip().upper()
-        today = cols[today_col].text.strip().upper() if today_col else "-"
-        thru = cols[thru_col].text.strip() if thru_col else "F"
-        if score == 'CUT':
-          players[player] = {'POS': pos, 'TO PAR': 'CUT', 'TODAY': '-', 'THRU': thru}
-          continue
-        elif score == 'WD':
-          players[player] = {'POS': pos, 'TO PAR': 'WD', 'TODAY': '-', 'THRU': thru}
-          continue
-        elif score == 'DQ':
-          players[player] = {'POS': pos, 'TO PAR': 'DQ', 'TODAY': '-', 'THRU': thru}
-          continue
-        elif score == 'E':
-          players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
-        else:
-          try:
-            players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
-          except ValueError:
-            players[player] = {'POS': '?', 'TO PAR': '?', 'TODAY': '?', 'THRU': '?'}
+      projected_cut = cols[0].text
+
+  #extract player data
+  for row in rows[1:]:
+    cols = row.find_all("td") 
+    player = cols[player_col].text.strip()
+    if(tee_time_col is None):
+      pos = cols[pos_col].text.strip()
+      score = cols[score_col].text.strip().upper()
+      today = cols[today_col].text.strip().upper() if today_col else "-"
+      thru = cols[thru_col].text.strip() if thru_col else "F"
+      if score == 'CUT':
+        players[player] = {'POS': pos, 'TO PAR': 'CUT', 'TODAY': '-', 'THRU': thru}
+        continue
+      elif score == 'WD':
+        players[player] = {'POS': pos, 'TO PAR': 'WD', 'TODAY': '-', 'THRU': thru}
+        continue
+      elif score == 'DQ':
+        players[player] = {'POS': pos, 'TO PAR': 'DQ', 'TODAY': '-', 'THRU': thru}
+        continue
+      elif score == 'E':
+        players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
       else:
-        tee_time = cols[tee_time_col].text.strip()
-        players[player] = {'TEE TIME': tee_time}
+        try:
+          players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
+        except ValueError:
+          players[player] = {'POS': '?', 'TO PAR': '?', 'TODAY': '?', 'THRU': '?'}
+    else:
+      tee_time = cols[tee_time_col].text.strip()
+      players[player] = {'TEE TIME': tee_time}
     
   return players, projected_cut
 
@@ -138,7 +142,7 @@ def ascii_art():
               """ + Fore.WHITE)
 
 def get_col_indecies(soup):
-  header_rows = soup.find_all("tr", class_="Table2__header-row")
+  header_rows = soup.find_all("tr", class_="Table__TR")
 
   # ensure tournament data exists
   if len(header_rows) == 0 :
@@ -211,8 +215,7 @@ def verify_scrape(players):
 
 
 def get_tournament_name(soup):
-  tournament_name = soup.find_all(
-    "h1", class_="headline__h1 Leaderboard__Event__Title")[0].text
+  tournament_name = soup.find_all("h1", class_="headline headline__h1 Leaderboard__Event__Title")[0].text
   return tournament_name
 
 
