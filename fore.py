@@ -96,7 +96,7 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
   for row in cut_row:
     cols = row.find_all("td")
     if(len(cols) < 2):
-      projected_cut = cols[0].text
+      projected_cut = None if "failed" in cols[0].text else cols[0].text
 
   #extract player data
   for row in rows[1:]:
