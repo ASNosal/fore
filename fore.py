@@ -70,7 +70,9 @@ def remove_golfer():
     if golfer_in_list:
       selected_players.remove(guy)
       print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)
+  write_list(selected_players)
     
+def write_list(selected_players):
   player_file = open("golfers.txt", 'w+')
   for dude in selected_players:
     player_file.write(str(dude) + '\n')
@@ -356,10 +358,9 @@ try:
     
     if catch_count in range(1,3):
       
-      command = input('Press G to add golfer to list, R to remove a golfer, L to show/hide the Leader or Q to Quit: ')
+      command = input('Press G to add golfer, R to remove a golfer, P to purge list and add new golfers, L to show/hide the Leader or Q to Quit: ')
       
       if command == 'G' or command =='g':
-        #TODO: pass scraped data into add_new_golfer for similarity checking
         dudes = add_new_golfer(jdata)
         if(dudes is not None):
           for dude in dudes:
@@ -374,6 +375,18 @@ try:
       
       elif command == 'R' or command =='r':
         remove_golfer()
+        catch_count = 0
+        run = True
+        
+      elif command == 'P' or command == 'p':
+        selected_players = []
+        dudes = add_new_golfer(jdata)
+        if(dudes is not None):
+          for dude in dudes:
+            selected_players.append(str(dude))
+          write_list(selected_players)
+        elif(dudes is None):
+          print('INVALID GOLFER LIST')
         catch_count = 0
         run = True
         
