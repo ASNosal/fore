@@ -43,10 +43,14 @@ def read_player_file(jdata):
   return selected_players
 
 def add_new_golfer(jdata):
-  new_golfer = input('Type first and last name of golfer: ')
-  dude = add_golfer(new_golfer,jdata)
-  print(Fore.GREEN + str(dude) + ' added!' + Fore.WHITE)
-  return dude
+  added = []
+  new_golfers = input('Type first and last name of golfers separated by commas: ')
+  for dude in new_golfers.split(','):
+    dude = dude.lstrip()
+    dude = add_golfer(dude,jdata)
+    print(Fore.GREEN + str(dude) + ' added!' + Fore.WHITE)
+    added.append(dude)
+  return added
 
 def add_golfer(golfer, jdata):
   for dude in jdata['Players']:
@@ -356,9 +360,10 @@ try:
       
       if command == 'G' or command =='g':
         #TODO: pass scraped data into add_new_golfer for similarity checking
-        dude = add_new_golfer(jdata)
-        if(dude is not None):
-          selected_players.append(str(dude))
+        dudes = add_new_golfer(jdata)
+        if(dudes is not None):
+          for dude in dudes:
+            selected_players.append(str(dude))
         catch_count = 0
         run = True
       
