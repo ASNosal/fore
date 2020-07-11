@@ -29,24 +29,28 @@ def create_player_file(jdata):
   
 
 def read_player_file(jdata):
+  file_players = []
   selected_players = []
   
   # create golfers.txt if it does not already exist
   if(not os.path.isfile("golfers.txt")):
     create_player_file(jdata)
 
-  player_file = open("golfers.txt")
+  player_file = open("golfers.txt", "r+")
   for player in player_file:
-    selected_players.append(player.rstrip("\n"))
+    file_players.append(player.rstrip("\n"))
+  player_file.truncate(0) # empty golfers.txt
   player_file.close()
+
+  for dude in file_players:
+    selected_players.append(add_golfer(dude,jdata))
 
   return selected_players
 
 def add_new_golfer(jdata):
   added = []
   new_golfers = input('Type first and last name of golfers separated by commas: ')
-  for dude in new_golfers.split(','):
-    dude = dude.lstrip()
+  for dude in new_golfers.split(', '):
     dude = add_golfer(dude,jdata)
     print(Fore.GREEN + str(dude) + ' added!' + Fore.WHITE)
     added.append(dude)
@@ -64,12 +68,13 @@ def add_golfer(golfer, jdata):
       continue
 
 def remove_golfer():
-  bye_golfer = input('Type first and last name of golfer to remove: ')
-  for guy in selected_players:
-    golfer_in_list = rate_player_similarity(bye_golfer, guy)
-    if golfer_in_list:
-      selected_players.remove(guy)
-      print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)
+  bye_golfers = input('Type first and last name of golfers to remove: ')
+  for bye_golfer in bye_golfers.split(', '):
+    for guy in selected_players:
+      golfer_in_list = rate_player_similarity(bye_golfer, guy)
+      if golfer_in_list:
+        selected_players.remove(guy)
+        print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)
   write_list(selected_players)
     
 def write_list(selected_players):
@@ -341,7 +346,6 @@ default_handler = signal.getsignal(signal.SIGINT)
 
 jdata,tee_time_col, projected_cut = extract_tourney_data()
 
-#TODO: pass scraped data into read_player_file for similarity checking
 selected_players = read_player_file(jdata)
 
 try:
@@ -379,11 +383,9 @@ try:
         run = True
         
       elif command == 'P' or command == 'p':
-        selected_players = []
         dudes = add_new_golfer(jdata)
         if(dudes is not None):
-          for dude in dudes:
-            selected_players.append(str(dude))
+          selected_players = dudes
           write_list(selected_players)
         elif(dudes is None):
           print('INVALID GOLFER LIST')
