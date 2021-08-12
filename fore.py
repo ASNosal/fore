@@ -163,7 +163,7 @@ def get_col_indecies(soup):
   # other possible entries for what could show up, add here.
   pos_fields = ['POS']
   player_fields = ['PLAYER']
-  to_par_fields = ['TO PAR', 'TOPAR', 'TO_PAR']
+  to_par_fields = ['TO PAR', 'TOPAR', 'TO_PAR', 'SCORE']
   today_fields = ['TODAY']
   thru_fields = ['THRU']
   tee_time_fields = ['TEE TIME']
