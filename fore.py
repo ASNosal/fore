@@ -93,7 +93,7 @@ def rate_player_similarity(player1, player2):
     return False
 
 def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col):
-  rows = soup.find_all("tr", class_="Table__TR Table__even")
+  rows = soup.find_all("tr", class_="PlayerRow__Overview PlayerRow__Overview--expandable Table__TR Table__even")
   cut_row = soup.find_all("tr", class_="cutline Table__TR Table__even")
   players = {}
   pos = ''
@@ -168,39 +168,43 @@ def get_col_indecies(soup):
   thru_fields = ['THRU']
   tee_time_fields = ['TEE TIME']
 
-  header_col = header_rows[0].find_all("th")
+  for header_row in header_rows:
+    header_col = header_row.find_all("th")
 
-  pos_col = None
-  player_col = None
-  score_col = None
-  today_col = None
-  thru_col = None
-  tee_time_col = None
+    pos_col = None
+    player_col = None
+    score_col = None
+    today_col = None
+    thru_col = None
+    tee_time_col = None
 
-  for i in range(len(header_col)):
-    col_txt = header_col[i].text.strip().upper()
-    if col_txt in pos_fields:
-      pos_col = i
-      continue
-    if col_txt in player_fields:
-      player_col = i
-      continue
-    if col_txt in to_par_fields:
-      score_col = i
-      continue
-    if col_txt in today_fields:
-      today_col = i
-      continue
-    if col_txt in thru_fields:
-      thru_col = i
-      continue
-    if(col_txt in tee_time_fields):
-      tee_time_col = i
-      continue
+    for i in range(len(header_col)):
+      col_txt = header_col[i].text.strip().upper()
+      if col_txt in pos_fields:
+        pos_col = i
+        continue
+      if col_txt in player_fields:
+        player_col = i
+        continue
+      if col_txt in to_par_fields:
+        score_col = i
+        continue
+      if col_txt in today_fields:
+        today_col = i
+        continue
+      if col_txt in thru_fields:
+        thru_col = i
+        continue
+      if(col_txt in tee_time_fields):
+        tee_time_col = i
+        continue
+    if player_col is not None and (score_col is not None or tee_time_col is not None):
+      break
 
   if player_col is None or (score_col is None and tee_time_col is None):
     print("Unable to track columns")
     exit()
+    
 
   return pos_col, player_col, score_col, today_col, thru_col, tee_time_col
 
