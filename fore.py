@@ -43,7 +43,9 @@ def read_player_file(jdata):
   player_file.close()
 
   for dude in file_players:
-    selected_players.append(add_golfer(dude,jdata))
+    golfer = add_golfer(dude,jdata)
+    if (golfer is not None):
+      selected_players.append(golfer)
 
   return selected_players
 
