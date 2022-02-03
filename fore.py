@@ -112,7 +112,7 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
       projected_cut = None if "failed" in cols[0].text else cols[0].text
 
   #extract player data
-  for row in rows[1:]:
+  for row in rows[0:]:
     cols = row.find_all("td") 
     player = cols[player_col].text.strip()
     if(tee_time_col is None):
