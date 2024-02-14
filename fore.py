@@ -10,6 +10,7 @@ from colorama import init
 from colorama import Fore, Back, Style
 
 #global variable
+HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0'}
 catch_count = 0
 init()
 
@@ -237,7 +238,7 @@ def get_tournament_name(soup):
 
 
 def extract_tourney_data():
-  result = requests.get("https://www.espn.com/golf/leaderboard")
+  result = requests.get("http://www.espn.com/golf/leaderboard", headers=HEADERS)
   soup = BeautifulSoup(result.text, "html.parser")
 
   status = soup.find_all("div", class_="status")[0].find_all("span")[0].text.upper()
