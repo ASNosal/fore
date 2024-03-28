@@ -60,8 +60,12 @@ def add_new_golfer(jdata):
   return added
 
 def add_golfer(golfer, jdata):
+  ratings = []
+  dudes = []
   for dude in jdata['Players']:
-    golfer_in_tourney = rate_player_similarity(golfer, dude)
+    golfer_in_tourney, ratio = rate_player_similarity(golfer, dude)
+    dudes.append(dude)
+    ratings.append(ratio)
     if golfer_in_tourney:
       player_file = open("golfers.txt", 'a')
       player_file.write(str(dude) + '\n')
@@ -69,15 +73,33 @@ def add_golfer(golfer, jdata):
       return dude
     else:
       continue
+  max_rating = ratings[0]
+  for i in range(1,len(ratings)):
+    if ratings[i] > max_rating:
+      max_rating = ratings[i]
+      ind = i
+  return dudes[ind]
 
 def remove_golfer():
+  ratings = []
   bye_golfers = input('Type first and last name of golfers to remove: ')
   for bye_golfer in bye_golfers.split(', '):
     for guy in selected_players:
-      golfer_in_list = rate_player_similarity(bye_golfer, guy)
+      golfer_in_list, rating = rate_player_similarity(bye_golfer, guy)
+      ratings.append(rating)
       if golfer_in_list:
         selected_players.remove(guy)
         print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)
+      else:
+        continue
+    if golfer_in_list is False:
+      max_rating = ratings[0]
+      for i in range(1,len(ratings)):
+        if ratings[i] > max_rating:
+          max_rating = ratings[i]
+          ind = i
+      selected_players.remove(selected_players[ind])
+      print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)           
   write_list(selected_players)
     
 def write_list(selected_players):
@@ -90,10 +112,10 @@ def rate_player_similarity(player1, player2):
   player1_split = player1.lower().split(' ')
   player2_split = player2.lower().split(' ')
   ratio = SequenceMatcher(None, player1_split[0], player2_split[0]).ratio() + SequenceMatcher(None, player1_split[1], player2_split[1]).ratio()
-  if ratio >= 1.5:
-    return True
+  if ratio == 2.0:
+    return True, ratio
   else:
-    return False
+    return False, ratio
 
 def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_time_col):
   rows = soup.find_all("tr", class_="PlayerRow__Overview PlayerRow__Overview--expandable Table__TR Table__even")
