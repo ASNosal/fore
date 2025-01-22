@@ -136,7 +136,7 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
 
   #extract player data
   for row in rows[0:]:
-    cols = row.find_all("td") 
+    cols = row.find_all("td")
     player = cols[player_col].text.strip()
     if(tee_time_col is None):
       pos = cols[pos_col].text.strip()
@@ -154,6 +154,8 @@ def get_players(soup, pos_col, player_col, score_col, today_col, thru_col, tee_t
         continue
       elif score == 'E':
         players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
+      elif score == '-':
+        players[player] = {'POS': pos, 'TO PAR': 0, 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': 0}
       else:
         try:
           players[player] = {'POS': pos, 'TO PAR': int(score), 'TODAY': (int(today) if today.lstrip('+').lstrip('-').isdigit() else 0), 'THRU': thru}
