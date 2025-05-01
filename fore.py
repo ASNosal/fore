@@ -55,12 +55,14 @@ def add_new_golfer(jdata):
   new_golfers = input('Type first and last name of golfers separated by commas: ')
   for dude in new_golfers.split(', '):
     dude = add_golfer(dude,jdata)
-    print(Fore.GREEN + str(dude) + ' added!' + Fore.WHITE)
-    added.append(dude)
+    if dude is not None:
+      print(Fore.GREEN + str(dude) + ' added!' + Fore.WHITE)
+      added.append(dude)
   return added
 
 def add_golfer(golfer, jdata):
   ratings = []
+  ind = -1
   dudes = []
   for dude in jdata['Players']:
     golfer_in_tourney, ratio = rate_player_similarity(golfer, dude)
@@ -72,16 +74,20 @@ def add_golfer(golfer, jdata):
       player_file.close()
       return dude
     else:
-      continue
+     continue
   max_rating = ratings[0]
   for i in range(1,len(ratings)):
     if ratings[i] > max_rating:
       max_rating = ratings[i]
       ind = i
-  return dudes[ind]
+  if ind != -1:
+    return dudes[ind]
+  else:
+    return None
 
 def remove_golfer():
   ratings = []
+  ind = -1
   bye_golfers = input('Type first and last name of golfers to remove: ')
   for bye_golfer in bye_golfers.split(', '):
     for guy in selected_players:
@@ -90,6 +96,7 @@ def remove_golfer():
       if golfer_in_list:
         selected_players.remove(guy)
         print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)
+        break
       else:
         continue
     if golfer_in_list is False:
@@ -98,8 +105,9 @@ def remove_golfer():
         if ratings[i] > max_rating:
           max_rating = ratings[i]
           ind = i
-      selected_players.remove(selected_players[ind])
-      print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)           
+      if ind != -1:
+        selected_players.remove(selected_players[ind])
+        print(Fore.RED + str(guy) + ' removed!' + Fore.WHITE)           
   write_list(selected_players)
     
 def write_list(selected_players):
