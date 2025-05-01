@@ -13,7 +13,7 @@ pip install bs4 requests colorama
 ```
 
 ## Usage
-Replace golfer names in golfers.txt with golfers to be tracked.
+Replace golfer names in golfers.txt with golfers to be tracked. Spelling errors will be corrected by fore.
 
 ```bash
 python fore.py
